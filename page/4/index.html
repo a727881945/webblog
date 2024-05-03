@@ -726,6 +726,153 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/origincode/origincodestudy.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jack Wang">
+      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王科杰">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iOS/origincode/origincodestudy.html" class="post-title-link" itemprop="url">iOS类的本质</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-10 11:26:39" itemprop="dateCreated datePublished" datetime="2017-10-10T11:26:39+08:00">2017-10-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">源码学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/%E7%B1%BB%E7%9A%84%E6%9C%AC%E8%B4%A8/" itemprop="url" rel="index"><span itemprop="name">类的本质</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/iOS/origincode/origincodestudy.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/iOS/origincode/origincodestudy.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="class"><a href="#class" class="headerlink" title="class"></a>class</h1><p>class_data_bits_t bits 这是一个64位结构体，里面只有一个 uintptr_t bits,<br>在x86_64架构上，并且class_rw_t [2, 47]只占到了47位，如下</p>
+<table>
+<thead>
+<tr>
+<th>63</th>
+<th>47</th>
+<th>2</th>
+<th>1</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>extra</td>
+<td>class_rw_t data</td>
+<td>requires raw_isa</td>
+<td>has default_rr</td>
+<td>is_swift</td>
+</tr>
+</tbody></table>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_IS_SWIFT           (1UL&lt;&lt;0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_HAS_DEFAULT_RR     (1UL&lt;&lt;1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_REQUIRES_RAW_ISA   (1UL&lt;&lt;2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_DATA_MASK          0x00007ffffffffff8UL</span></span><br></pre></td></tr></table></figure>
+<p>在编译期间类的结构中的 <code>class_data_bits_t *data</code> 指向的是一个 <code>class_ro_t *</code> 指针：</p>
+<ul>
+<li>类在内存中的位置是在编译期间决定的，在之后修改代码，也不会改变内存中的位置。</li>
+<li>类的方法、属性以及协议在编译期间存放到了“错误”的位置，直到 realizeClass 执行之后，才放到了 class_rw_t 指向的只读区域 class_ro_t，这样我们即可以在运行时为 class_rw_t 添加方法，也不会影响类的只读结构。</li>
+<li>在 class_ro_t 中的属性在运行期间就不能改变了，再添加方法时，会修改 class_rw_t 中的 methods 列表，而不是 class_ro_t 中的 baseMethods，对于方法的添加会在之后的文章中分析。</li>
+</ul>
+<p>在 Objective-C 运行时 初始化的过程中会对其中的类进行第一次初始化也就是执行 realizeClass 方法，为类分配可读写结构体 class_rw_t 的空间，并返回正确的类结构体。</p>
+<p>而 _class_initialize 方法会调用类的 initialize 方法，</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="operator">!</span>cls-&gt;isRealized()) &#123;</span><br><span class="line">    rwlock_writer_t lock(runtimeLock);</span><br><span class="line">    realizeClass(cls);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (initialize  <span class="operator">&amp;&amp;</span>  <span class="operator">!</span>cls-&gt;isInitialized()) &#123;</span><br><span class="line">    _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考 <span class="exturl" data-url="aHR0cHM6Ly9kcmF2ZW5lc3MubWUvb2JqZWN0LWluaXQ=">对象是如何初始化的<i class="fa fa-external-link-alt"></i></span></p>
+<h1 id="selector"><a href="#selector" class="headerlink" title="@selector()"></a>@selector()</h1><p>使用 @selector() 生成的选择子不会因为类的不同而改变，其内存地址在编译期间就已经确定了。也就是说向不同的类发送相同的消息时，其生成的选择子是完全相同的。</p>
+<ul>
+<li>Objective-C 为我们维护了一个巨大的选择子表</li>
+<li>在使用 @selector() 时会从这个选择子表中根据选择子的名字查找对应的 SEL。如果没有找到，则会生成一个 SEL 并添加到表中</li>
+<li>在编译期间会扫描全部的头文件和实现文件将其中的方法以及使用 @selector() 生成的选择子加入到选择子表中</li>
+</ul>
+<h1 id="objc-msgsend"><a href="#objc-msgsend" class="headerlink" title="objc_msgsend()"></a>objc_msgsend()</h1><p>Objective-C 中 objc_msgSend 的实现并没有开源，它只存在于 message.h 这个头文件中。</p>
+<blockquote>
+<p>当编译器遇到一个方法调用时，它会将方法的调用翻译成以下函数中的一个 objc_msgSend、objc_msgSend_stret、objc_msgSendSuper 和 objc_msgSendSuper_stret。 发送给对象的父类的消息会使用 objc_msgSendSuper 有数据结构作为返回值的方法会使用 objc_msgSendSuper_stret 或 objc_msgSend_stret 其它的消息都是使用 objc_msgSend 发送的</p>
+</blockquote>
+<p>objc_msgSend -&gt; _class_loopupMethodAndLocadCache3 -&gt; lookUpImpOrForward </p>
+<p>对于 objc/objc-runtime-new.mm 中 lookupImpOrForward 的总结如下：</p>
+<ul>
+<li>无锁的缓存查找</li>
+<li>如果类没有实现（isRealized）或者初始化（isInitialized），实现或者初始化类</li>
+<li>加锁</li>
+<li>缓存以及当前类中方法的查找</li>
+<li>尝试查找父类的缓存以及方法列表</li>
+<li>没有找到实现，尝试方法解析器</li>
+<li>进行消息转发</li>
+<li>解锁、返回实现</li>
+</ul>
+<blockquote>
+<p>不过因为 _class_lookupMethodAndLoadCache3 传入的 cache = NO，所以这里会直接跳过 if 中代码的执行，在 objc_msgSend 中已经使用汇编代码查找过了。</p>
+</blockquote>
+<p>如果缓存没有命中 -&gt; 找到之后加入缓存 -&gt; 第二次调用的时候，就不会走lookupImpOrForward,而是汇编查找了缓存，</p>
+<p>为了提高消息传递的效率，ObjC 对 objc_msgSend 以及  cache_getImp 使用了汇编语言来编写。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2RyYXZlbmVzcy9hbmFseXpl">看着看着来到了这里<i class="fa fa-external-link-alt"></i></span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/origincode/metaclass.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -861,153 +1008,6 @@
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>元类是类对象的类。每个类都有自己独特的元类(因为每个类都可以有自己独特的方法列表)。这意味着所有类对象本身并不都属于同一个类。</p>
 <p>元类将始终确保类对象具有层次结构中基类的所有实例和类方法，以及中间的所有类方法。对于派生自NSObject的类，这意味着所有NSObject实例和协议方法都为所有类(和元类)对象定义。</p>
 <p>所有元类本身都使用基类的元类(NSObject层次结构类的NSObject元类)作为类，包括运行时中惟一自定义的基类元类。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/origincode/origincodestudy.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jack Wang">
-      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="王科杰">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iOS/origincode/origincodestudy.html" class="post-title-link" itemprop="url">iOS类的本质</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-10-10 11:26:39" itemprop="dateCreated datePublished" datetime="2017-10-10T11:26:39+08:00">2017-10-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">源码学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/%E7%B1%BB%E7%9A%84%E6%9C%AC%E8%B4%A8/" itemprop="url" rel="index"><span itemprop="name">类的本质</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/iOS/origincode/origincodestudy.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/iOS/origincode/origincodestudy.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="class"><a href="#class" class="headerlink" title="class"></a>class</h1><p>class_data_bits_t bits 这是一个64位结构体，里面只有一个 uintptr_t bits,<br>在x86_64架构上，并且class_rw_t [2, 47]只占到了47位，如下</p>
-<table>
-<thead>
-<tr>
-<th>63</th>
-<th>47</th>
-<th>2</th>
-<th>1</th>
-<th>0</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>extra</td>
-<td>class_rw_t data</td>
-<td>requires raw_isa</td>
-<td>has default_rr</td>
-<td>is_swift</td>
-</tr>
-</tbody></table>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_IS_SWIFT           (1UL&lt;&lt;0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_HAS_DEFAULT_RR     (1UL&lt;&lt;1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_REQUIRES_RAW_ISA   (1UL&lt;&lt;2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAST_DATA_MASK          0x00007ffffffffff8UL</span></span><br></pre></td></tr></table></figure>
-<p>在编译期间类的结构中的 <code>class_data_bits_t *data</code> 指向的是一个 <code>class_ro_t *</code> 指针：</p>
-<ul>
-<li>类在内存中的位置是在编译期间决定的，在之后修改代码，也不会改变内存中的位置。</li>
-<li>类的方法、属性以及协议在编译期间存放到了“错误”的位置，直到 realizeClass 执行之后，才放到了 class_rw_t 指向的只读区域 class_ro_t，这样我们即可以在运行时为 class_rw_t 添加方法，也不会影响类的只读结构。</li>
-<li>在 class_ro_t 中的属性在运行期间就不能改变了，再添加方法时，会修改 class_rw_t 中的 methods 列表，而不是 class_ro_t 中的 baseMethods，对于方法的添加会在之后的文章中分析。</li>
-</ul>
-<p>在 Objective-C 运行时 初始化的过程中会对其中的类进行第一次初始化也就是执行 realizeClass 方法，为类分配可读写结构体 class_rw_t 的空间，并返回正确的类结构体。</p>
-<p>而 _class_initialize 方法会调用类的 initialize 方法，</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="operator">!</span>cls-&gt;isRealized()) &#123;</span><br><span class="line">    rwlock_writer_t lock(runtimeLock);</span><br><span class="line">    realizeClass(cls);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (initialize  <span class="operator">&amp;&amp;</span>  <span class="operator">!</span>cls-&gt;isInitialized()) &#123;</span><br><span class="line">    _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>参考 <span class="exturl" data-url="aHR0cHM6Ly9kcmF2ZW5lc3MubWUvb2JqZWN0LWluaXQ=">对象是如何初始化的<i class="fa fa-external-link-alt"></i></span></p>
-<h1 id="selector"><a href="#selector" class="headerlink" title="@selector()"></a>@selector()</h1><p>使用 @selector() 生成的选择子不会因为类的不同而改变，其内存地址在编译期间就已经确定了。也就是说向不同的类发送相同的消息时，其生成的选择子是完全相同的。</p>
-<ul>
-<li>Objective-C 为我们维护了一个巨大的选择子表</li>
-<li>在使用 @selector() 时会从这个选择子表中根据选择子的名字查找对应的 SEL。如果没有找到，则会生成一个 SEL 并添加到表中</li>
-<li>在编译期间会扫描全部的头文件和实现文件将其中的方法以及使用 @selector() 生成的选择子加入到选择子表中</li>
-</ul>
-<h1 id="objc-msgsend"><a href="#objc-msgsend" class="headerlink" title="objc_msgsend()"></a>objc_msgsend()</h1><p>Objective-C 中 objc_msgSend 的实现并没有开源，它只存在于 message.h 这个头文件中。</p>
-<blockquote>
-<p>当编译器遇到一个方法调用时，它会将方法的调用翻译成以下函数中的一个 objc_msgSend、objc_msgSend_stret、objc_msgSendSuper 和 objc_msgSendSuper_stret。 发送给对象的父类的消息会使用 objc_msgSendSuper 有数据结构作为返回值的方法会使用 objc_msgSendSuper_stret 或 objc_msgSend_stret 其它的消息都是使用 objc_msgSend 发送的</p>
-</blockquote>
-<p>objc_msgSend -&gt; _class_loopupMethodAndLocadCache3 -&gt; lookUpImpOrForward </p>
-<p>对于 objc/objc-runtime-new.mm 中 lookupImpOrForward 的总结如下：</p>
-<ul>
-<li>无锁的缓存查找</li>
-<li>如果类没有实现（isRealized）或者初始化（isInitialized），实现或者初始化类</li>
-<li>加锁</li>
-<li>缓存以及当前类中方法的查找</li>
-<li>尝试查找父类的缓存以及方法列表</li>
-<li>没有找到实现，尝试方法解析器</li>
-<li>进行消息转发</li>
-<li>解锁、返回实现</li>
-</ul>
-<blockquote>
-<p>不过因为 _class_lookupMethodAndLoadCache3 传入的 cache = NO，所以这里会直接跳过 if 中代码的执行，在 objc_msgSend 中已经使用汇编代码查找过了。</p>
-</blockquote>
-<p>如果缓存没有命中 -&gt; 找到之后加入缓存 -&gt; 第二次调用的时候，就不会走lookupImpOrForward,而是汇编查找了缓存，</p>
-<p>为了提高消息传递的效率，ObjC 对 objc_msgSend 以及  cache_getImp 使用了汇编语言来编写。</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2RyYXZlbmVzcy9hbmFseXpl">看着看着来到了这里<i class="fa fa-external-link-alt"></i></span></p>
 
       
     </div>
@@ -1213,31 +1213,31 @@
 <li><span class="exturl" data-url="aHR0cHM6Ly9vcGVuc291cmNlLmFwcGxlLmNvbS90YXJiYWxscw==">苹果源码库<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
 <h2 id="关于iOS基础技术部分"><a href="#关于iOS基础技术部分" class="headerlink" title="关于iOS基础技术部分"></a>关于iOS基础技术部分</h2><ul>
-<li>你可以点击<a href="./categories/">iOS目录</a>，查看更详细的大纲<ul>
-<li><a href="./iOS/objective-c/index.html">OC相关基础</a></li>
-<li><a href="./iOS/multithreading/index.html">多线程</a></li>
-<li><a href="./iOS/RunTime/index">RunTime</a></li>
-<li><a href="./iOS/RunLoop/index">RunLoop</a></li>
-<li><a href="./iOS/Autoreleasepool.html">AutoReleasePool</a></li>
-<li><a href="./iOS/block/index.html">block相关</a></li>
-<li><a href="./iOS/animation/index.html">animation动画</a></li>
-<li><a href="./iOS/algorithm/index.html">算法收集</a></li>
-<li><a href="./iOS/memorymanagerment/memory.html">内存管理</a></li>
-<li><a href="./iOS/performance/index.html">iOS优化</a></li>
-<li><a href="./iOS/kernelarchitecture/overview.html">苹果内核架构</a></li>
-<li><a href="./iOS/kernelarchitecture/mach.html">mach内核</a></li>
-<li><a href="./iOS/thirdpart/asdk.html">AsyncDisplayKit</a></li>
-<li><a href="./iOS/hybrid/hybrid.html">Hybrid浅谈</a></li>
+<li>你可以点击<a href="../../categories/">iOS目录</a>，查看更详细的大纲<ul>
+<li><a href="./objective-c/index.html">OC相关基础</a></li>
+<li><a href="./multithreading/index.html">多线程</a></li>
+<li><a href="./RunTime/index">RunTime</a></li>
+<li><a href="./RunLoop/index">RunLoop</a></li>
+<li><a href="./Autoreleasepool.html">AutoReleasePool</a></li>
+<li><a href="./block/index.html">block相关</a></li>
+<li><a href="./animation/index.html">animation动画</a></li>
+<li><a href="./algorithm/index.html">算法收集</a></li>
+<li><a href="./memorymanagerment/memory.html">内存管理</a></li>
+<li><a href="./performance/index.html">iOS优化</a></li>
+<li><a href="./kernelarchitecture/overview.html">苹果内核架构</a></li>
+<li><a href="./kernelarchitecture/mach.html">mach内核</a></li>
+<li><a href="./thirdpart/asdk.html">AsyncDisplayKit</a></li>
+<li><a href="./hybrid/hybrid.html">Hybrid浅谈</a></li>
 </ul>
 </li>
 <li><a href="./categories/iOS/%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">iOS源码学习</a><ul>
-<li><a href="./iOS/origincode/metaclass.html">什么是元类</a></li>
-<li><a href="./iOS/origincode/origincodestudy.html">类的本质</a></li>
-<li><a href="./iOS/origincode/category.html">分类</a></li>
+<li><a href="./origincode/metaclass.html">什么是元类</a></li>
+<li><a href="./origincode/origincodestudy.html">类的本质</a></li>
+<li><a href="./origincode/category.html">分类</a></li>
 </ul>
 </li>
 <li><a href="./categories/iOS/Third-Party-Lib/">第三方库学习</a><ul>
-<li><a href="./iOS/thirdpart/sdwebimage.html">SDWebImage</a></li>
+<li><a href="./thirdpart/sdwebimage.html">SDWebImage</a></li>
 <li><a href="iOS/thirdpart/glide.html">Glide</a></li>
 </ul>
 </li>
@@ -1247,23 +1247,23 @@
 </li>
 </ul>
 <h2 id="杂项"><a href="#杂项" class="headerlink" title="杂项"></a>杂项</h2><ul>
-<li><a href="./iOS/crashrepaort/crashanalysis.html">iOS程序崩溃和抓取原理</a></li>
-<li><a href="./iOS/performance/modularization">组件化记录</a></li>
+<li><a href="./crashrepaort/crashanalysis.html">iOS程序崩溃和抓取原理</a></li>
+<li><a href="./performance/modularization">组件化记录</a></li>
 <li><a href="./sumup/sumupthepast">总结过</a></li>
 <li><a href="./acrossplatform/breakpad">Breakpad跨平台Crash Report解决方案</a></li>
 <li><a href="./os/dyld">dyly-简阅</a></li>
 <li><a href="./luafile/lua-patch">OC热修复方案 - 草稿中</a></li>
 <li><a href="./luafile/luacode">lua源码学习</a></li>
-<li><a href="./iOS/fishhook">fishhook crash</a></li>
+<li><a href="./fishhook">fishhook crash</a></li>
 <li><a href="./computer/string">字符串匹配算法</a></li>
-<li><a href="./iOS/performance/wildpoint">野指针-未完</a></li>
+<li><a href="./performance/wildpoint">野指针-未完</a></li>
 <li><a href="">oom-卡顿等-未开始</a></li>
 <li><a href="./luafile/">Lua相关</a></li>
 </ul>
 <h2 id="面试快餐"><a href="#面试快餐" class="headerlink" title="面试快餐"></a>面试快餐</h2><ul>
-<li><a href="./iOS/interview/">部分索引</a></li>
-<li><a href="./iOS/interview/memory">内存管理</a></li>
-<li><a href="./iOS/interview/xingneng">性能优化</a></li>
+<li><a href="./interview/">部分索引</a></li>
+<li><a href="./interview/memory">内存管理</a></li>
+<li><a href="./interview/xingneng">性能优化</a></li>
 <li><span class="exturl" data-url="aHR0cHM6Ly9tcC53ZWl4aW4ucXEuY29tL3MvNmNrUm55QUFMYkNzWGZadTU2a1REdw==">离屏渲染等原理<i class="fa fa-external-link-alt"></i></span></li>
 <li>SideTable相关（主要用来引用计数和weak表）<br>  定义在objc-private文件下。  由<code>static objc::ExplicitInit&lt;StripedMap&lt;SideTable&gt;&gt; SideTablesMap;</code> 全局静态变量<br>  类型为StripedMap，iOS有8张SideTable表，mac有64张， 重载了[]方法，可以通过对象指针分配其中一张表Sidetable，<ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC8xM2M0ZmIxY2VkZWE=">https://www.jianshu.com/p/13c4fb1cedea<i class="fa fa-external-link-alt"></i></span></li>
@@ -1276,130 +1276,6 @@
 <li><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9jMTc5M2JjMmNhMTM=">为什么会有元类的设计<i class="fa fa-external-link-alt"></i></span></li>
 <li><span class="exturl" data-url="aHR0cHM6Ly9ub25nY2hhb3poZS5naXRodWIuaW8vMjAxOS8wOS8wOC9pc0VxdWFsJUU1JTkyJThDaGFzaCVFNyU5QSU4NCVFNSU4NSVCMyVFNyVCMyVCQi8=">isEqual 和 hash<i class="fa fa-external-link-alt"></i></span></li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/RunTime/index.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jack Wang">
-      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="王科杰">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iOS/RunTime/index.html" class="post-title-link" itemprop="url">RunTime知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-09-15 11:26:39" itemprop="dateCreated datePublished" datetime="2017-09-15T11:26:39+08:00">2017-09-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/RunTime/" itemprop="url" rel="index"><span itemprop="name">RunTime</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/iOS/RunTime/index.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/iOS/RunTime/index.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>这里主要收集RunTime相关东西</p>
-<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9jMTc5M2JjMmNhMTM=">为什么会有元类<i class="fa fa-external-link-alt"></i></span></p>
-<h2 id="如何运用-Runtime-进行模型的归解档"><a href="#如何运用-Runtime-进行模型的归解档" class="headerlink" title="如何运用 Runtime 进行模型的归解档"></a>如何运用 <code>Runtime</code> 进行模型的归解档</h2><p><code>Runtime</code> 遍历 <code>ivar_list</code>。</p>
-<h2 id="如何运用-Runtime-字典转模型？"><a href="#如何运用-Runtime-字典转模型？" class="headerlink" title="如何运用 Runtime 字典转模型？"></a>如何运用 <code>Runtime</code> 字典转模型？</h2><p><code>Runtime</code> 遍历 <code>ivar_list</code>,结合 <code>KVC</code> 赋值。</p>
-<h2 id="如何给-Category-添加属性？关联对象以什么形式进行存储？"><a href="#如何给-Category-添加属性？关联对象以什么形式进行存储？" class="headerlink" title="如何给 Category 添加属性？关联对象以什么形式进行存储？"></a>如何给 <code>Category</code> 添加属性？关联对象以什么形式进行存储？</h2><p>查看的是 <code>关联对象</code> 的知识点。</p>
-<p>详细的说一下 <code>关联对象</code>。<br><code>关联对象</code> 以哈希表的格式，存储在一个全局的单例中。</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">Extension</span>)</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">copy</span>  ) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">Extension</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)setName:(<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">    </span><br><span class="line">    objc_setAssociatedObject(<span class="keyword">self</span>, <span class="keyword">@selector</span>(name), name, OBJC_ASSOCIATION_COPY_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="built_in">NSString</span> *)name &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> objc_getAssociatedObject(<span class="keyword">self</span>,<span class="keyword">@selector</span>(name));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<h2 id="什么时候会报unrecognized-selector的异常？"><a href="#什么时候会报unrecognized-selector的异常？" class="headerlink" title="什么时候会报unrecognized selector的异常？"></a>什么时候会报unrecognized selector的异常？</h2><p>objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，如果，在最顶层的父类中依然找不到相应的方法时，会进入消息转发阶段，如果消息三次转发流程仍未实现，则程序在运行时会挂掉并抛出异常unrecognized selector sent to XXX 。</p>
-<h2 id="runtime如何实现weak变量的自动置nil？知道SideTable吗？"><a href="#runtime如何实现weak变量的自动置nil？知道SideTable吗？" class="headerlink" title="runtime如何实现weak变量的自动置nil？知道SideTable吗？"></a>runtime如何实现weak变量的自动置nil？知道SideTable吗？</h2><blockquote>
-<p>runtime 对注册的类会进行布局，对于 weak 修饰的对象会放入一个 hash 表中。 用 weak 指向的对象内存地址作为key，当此对象的引用计数为0的时候会 dealloc，假如 weak 指向的对象内存地址是a，那么就会以a为键， 在这个 weak表中搜索，找到所有以a为键的 weak 对象，从而设置为 nil。</p>
-</blockquote>
-<p><strong>更细一点的回答：</strong></p>
-<p>1.初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。<br>2.添加引用时：objc_initWeak函数会调用objc_storeWeak() 函数， objc_storeWeak()的作用是更新指针指向，创建对应的弱引用表。<br>3.释放时,调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
-<p>SideTable结构体是负责管理类的引用计数表和weak表，</p>
-<p>详解：参考自《Objective-C高级编程》一书<br><strong>1.初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。</strong></p>
-<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    NSObject *obj <span class="operator">=</span> [[NSObject alloc] init]<span class="comment">;</span></span><br><span class="line">    id __weak obj1 <span class="operator">=</span> obj<span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。</p>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译器的模拟代码</span></span><br><span class="line"> id obj1;</span><br><span class="line"> objc<span class="constructor">_initWeak(&amp;<span class="params">obj1</span>, <span class="params">obj</span>)</span>;</span><br><span class="line"><span class="comment">/*obj引用计数变为0，变量作用域结束*/</span></span><br><span class="line"> objc<span class="constructor">_destroyWeak(&amp;<span class="params">obj1</span>)</span>;</span><br></pre></td></tr></table></figure>
-<p>通过objc_initWeak函数初始化“附有weak修饰符的变量（obj1）”，在变量作用域结束时通过objc_destoryWeak函数释放该变量（obj1）。</p>
-<p><strong>2.添加引用时：objc_initWeak函数会调用objc_storeWeak() 函数， objc_storeWeak()的作用是更新指针指向，创建对应的弱引用表。</strong></p>
-<p>objc_initWeak函数将“附有weak修饰符的变量（obj1）”初始化为0（nil）后，会将“赋值对象”（obj）作为参数，调用objc_storeWeak函数。</p>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">obj1 = <span class="number">0</span>；</span><br><span class="line">obj<span class="constructor">_storeWeak(&amp;<span class="params">obj1</span>, <span class="params">obj</span>)</span>;</span><br></pre></td></tr></table></figure>
-
-<p><strong>也就是说：</strong></p>
-<p>weak 修饰的指针默认值是 nil （在Objective-C中向nil发送消息是安全的）</p>
-<p>然后obj_destroyWeak函数将0（nil）作为参数，调用objc_storeWeak函数。</p>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objc<span class="constructor">_storeWeak(&amp;<span class="params">obj1</span>, 0)</span>;</span><br></pre></td></tr></table></figure>
-<p>前面的源代码与下列源代码相同。</p>
-<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译器的模拟代码</span></span><br><span class="line">id obj1;</span><br><span class="line">obj1 = <span class="number">0</span>;</span><br><span class="line">objc<span class="constructor">_storeWeak(&amp;<span class="params">obj1</span>, <span class="params">obj</span>)</span>;</span><br><span class="line"><span class="comment">/* ... obj的引用计数变为0，被置nil ... */</span></span><br><span class="line">objc<span class="constructor">_storeWeak(&amp;<span class="params">obj1</span>, 0)</span>;</span><br></pre></td></tr></table></figure>
-<p>objc_storeWeak函数把第二个参数的赋值对象（obj）的内存地址作为键值，将第一个参数__weak修饰的属性变量（obj1）的内存地址注册到 weak 表中。如果第二个参数（obj）为0（nil），那么把变量（obj1）的地址从weak表中删除。</p>
-<p>由于一个对象可同时赋值给多个附有__weak修饰符的变量中，所以对于一个键值，可注册多个变量的地址。</p>
-<p>可以把objc_storeWeak(&amp;a, b)理解为：objc_storeWeak(value, key)，并且当key变nil，将value置nil。在b非nil时，a和b指向同一个内存地址，在b变nil时，a变nil。此时向a发送消息不会崩溃：在Objective-C中向nil发送消息是安全的。</p>
-<p><strong>3.释放时,调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</strong></p>
-<p>当weak引用指向的对象被释放时，又是如何去处理weak指针的呢？当释放对象时，其基本流程如下：</p>
-<p>1.调用objc_release<br>2.因为对象的引用计数为0，所以执行dealloc<br>3.在dealloc中，调用了_objc_rootDealloc函数<br>4.在_objc_rootDealloc中，调用了object_dispose函数<br>5.调用objc_destructInstance<br>6.最后调用objc_clear_deallocating</p>
-<p>对象被释放时调用的objc_clear_deallocating函数:</p>
-<p>1.从weak表中获取废弃对象的地址为键值的记录<br>2.将包含在记录中的所有附有 weak修饰符变量的地址，赋值为nil<br>3.将weak表中该记录删除<br>4.从引用计数表中删除废弃对象的地址为键值的记录</p>
-<p><strong>总结:</strong></p>
-<p>其实Weak表是一个hash（哈希）表，Key是weak所指对象的地址，Value是weak指针的地址（这个地址的值是所指对象指针的地址）数组。</p>
 
       
     </div>
@@ -1578,6 +1454,114 @@
 <blockquote>
 <p><a href="./iOS/RunLoop/runloopyunxing.html">Runloop 运行</a></p>
 </blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/RunLoop/runloop.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jack Wang">
+      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王科杰">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iOS/RunLoop/runloop.html" class="post-title-link" itemprop="url">RunLoop的一些场景</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-15 11:26:39" itemprop="dateCreated datePublished" datetime="2017-09-15T11:26:39+08:00">2017-09-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/RunLoop/" itemprop="url" rel="index"><span itemprop="name">RunLoop</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/RunLoop/RunLoop%E7%9A%84%E4%B8%80%E4%BA%9B%E5%9C%BA%E6%99%AF/" itemprop="url" rel="index"><span itemprop="name">RunLoop的一些场景</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/iOS/RunLoop/runloop.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/iOS/RunLoop/runloop.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="一、autoreleasePool-在何时被释放？"><a href="#一、autoreleasePool-在何时被释放？" class="headerlink" title="一、autoreleasePool 在何时被释放？"></a>一、<code>autoreleasePool</code> 在何时被释放？</h2><p><code>App</code>启动后，苹果在主线程 <code>RunLoop</code> 里注册了两个 <code>Observer</code>，其回调都是 <code>_wrapRunLoopWithAutoreleasePoolHandler()</code>。</p>
+<p>第一个 <code>Observer</code> 监视的事件是 <code>Entry(即将进入Loop)</code>，其回调内会调用 <code>_objc_autoreleasePoolPush()</code> 创建自动释放池。其 <code>order</code> 是 <code>-2147483647</code>，优先级最高，保证创建释放池发生在其他所有回调之前。</p>
+<p>第二个 <code>Observer</code> 监视了两个事件： <code>BeforeWaiting</code>(准备进入休眠) 时调用<code>_objc_autoreleasePoolPop()</code>  和 <code>_objc_autoreleasePoolPush()</code> 释放旧的池并创建新池；<code>Exit</code>(即将退出Loop) 时调用 <code>_objc_autoreleasePoolPop()</code> 来释放自动释放池。这个 <code>Observer</code> 的 <code>order</code> 是 <code>2147483647</code>，优先级最低，保证其释放池子发生在其他所有回调之后。</p>
+<p>在主线程执行的代码，通常是写在诸如事件回调、<code>Timer</code>回调内的。这些回调会被 <code>RunLoop</code> 创建好的 <code>AutoreleasePool</code> 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 <code>Pool</code> 了。</p>
+<h2 id="二、PerformSelector-的实现原理？"><a href="#二、PerformSelector-的实现原理？" class="headerlink" title="二、PerformSelector 的实现原理？"></a>二、<code>PerformSelector</code> 的实现原理？</h2><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以如果当前线程没有 RunLoop，则这个方法会失效。</p>
+<p>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，同样的，如果对应线程没有 RunLoop 该方法也会失效。</p>
+<h2 id="三、PerformSelector-afterDelay-这个方法在子线程中是否起作用？为什么？怎么解决？"><a href="#三、PerformSelector-afterDelay-这个方法在子线程中是否起作用？为什么？怎么解决？" class="headerlink" title="三、PerformSelector:afterDelay:这个方法在子线程中是否起作用？为什么？怎么解决？"></a>三、<code>PerformSelector:afterDelay:</code>这个方法在子线程中是否起作用？为什么？怎么解决？</h2><p>不起作用，子线程默认没有 <code>Runloop</code>，也就没有 <code>Timer</code>。</p>
+<p>解决的办法是可以使用 <code>GCD</code> 来实现：<code>Dispatch_after</code></p>
+<h2 id="四、为什么-NSTimer-有时候不好使？"><a href="#四、为什么-NSTimer-有时候不好使？" class="headerlink" title="四、为什么 NSTimer 有时候不好使？"></a>四、为什么 <code>NSTimer</code> 有时候不好使？</h2><p>因为创建的  <code>NSTimer</code> 默认是被加入到了 <code>defaultMode</code>，所以当 <code>Runloop</code> 的 <code>Mode</code> 变化时，当前的 <code>NSTimer</code> 就不会工作了。</p>
+<h2 id="五、解释一下-GCD-在-Runloop-中的使用？"><a href="#五、解释一下-GCD-在-Runloop-中的使用？" class="headerlink" title="五、解释一下 GCD 在 Runloop 中的使用？"></a>五、解释一下 <code>GCD</code> 在 <code>Runloop</code> 中的使用？</h2><p><code>GCD</code>由 子线程 返回到 主线程,只有在这种情况下才会触发 RunLoop。会触发 RunLoop 的 Source 1 事件。</p>
+<h2 id="六、解释一下-NSTimer。"><a href="#六、解释一下-NSTimer。" class="headerlink" title="六、解释一下 NSTimer。"></a>六、解释一下 <code>NSTimer</code>。</h2><p><code>NSTimer</code> 其实就是 <code>CFRunLoopTimerRef</code>，他们之间是 <code>toll-free bridged</code> 的。一个 <code>NSTimer</code> 注册到 <code>RunLoop</code> 后，<code>RunLoop</code> 会为其重复的时间点注册好事件。例如 <code>10:00</code>, <code>10:10</code>, <code>10:20</code> 这几个时间点。<code>RunLoop</code> 为了节省资源，并不会在非常准确的时间点回调这个<code>Timer</code>。<code>Timer</code> 有个属性叫做 <code>Tolerance</code> (宽容度)，标示了当时间点到后，容许有多少最大误差。</p>
+<p>如果某个时间点被错过了，例如执行了一个很长的任务，则那个时间点的回调也会跳过去，不会延后执行。就比如等公交，如果 10:10 时我忙着玩手机错过了那个点的公交，那我只能等 10:20 这一趟了。</p>
+<p><code>CADisplayLink</code> 是一个和屏幕刷新率一致的定时器（但实际实现原理更复杂，和 NSTimer 并不一样，其内部实际是操作了一个 <code>Source</code>）。如果在两次屏幕刷新之间执行了一个长任务，那其中就会有一帧被跳过去（和 <code>NSTimer</code> 相似），造成界面卡顿的感觉。在快速滑动 <code>TableView</code> 时，即使一帧的卡顿也会让用户有所察觉。<code>Facebook</code> 开源的 <code>AsyncDisplayLink</code> 就是为了解决界面卡顿的问题，其内部也用到了 <code>RunLoop</code>。</p>
+<h2 id="七、等待补充中。。。"><a href="#七、等待补充中。。。" class="headerlink" title="七、等待补充中。。。"></a>七、等待补充中。。。</h2><ul>
+<li>Timer</li>
+<li>autoreleasePool创建</li>
+<li>线程保活</li>
+<li>检测卡顿</li>
+<li>scrollview的更新 TrackingRunloopMode下不做操作，添加到 defaultmode下</li>
+</ul>
 
       
     </div>
