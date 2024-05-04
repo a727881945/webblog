@@ -1574,6 +1574,143 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/block/index.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jack Wang">
+      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王科杰">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iOS/block/index.html" class="post-title-link" itemprop="url">Block相关知识点</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-07-10 12:24:27" itemprop="dateCreated datePublished" datetime="2015-07-10T12:24:27+08:00">2015-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/OC%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">OC语言</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/iOS/block/index.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/iOS/block/index.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Block的几种形式"><a href="#Block的几种形式" class="headerlink" title="Block的几种形式"></a>Block的几种形式</h2><p>   分为全局Block(<code>_NSConcreteGlobalBlock</code>)、栈Block(<code>_NSConcreteStackBlock</code>)、堆Block<br>(<code>_NSConcreteMallocBlock</code>)三种形式<br>   其中栈Block存储在栈(stack)区，堆Block存储在堆(heap)区，全局Block存储在已初始化数据(.data)区</p>
+<p><strong>1、不使用外部变量的block是全局block</strong></p>
+<p>比如：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;globalBlock&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSGlobalBlock__</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>2、使用外部变量并且未进行copy操作的block是栈block</strong></p>
+<p>比如:</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSInteger</span> num = <span class="number">10</span>;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[^&#123;</span><br><span class="line">      <span class="built_in">NSLog</span>(<span class="string">@&quot;stackBlock:%zd&quot;</span>,num);</span><br><span class="line">  &#125; <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSStackBlock__</span></span><br></pre></td></tr></table></figure>
+
+<p>日常开发常用于这种情况:</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span> testWithBlock:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,<span class="keyword">self</span>);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)testWithBlock:(dispatch_block_t)block &#123;</span><br><span class="line">    block();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[block <span class="keyword">class</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3、对栈block进行copy操作，就是堆block，而对全局block进行copy，仍是全局block</strong></p>
+<ul>
+<li>比如堆1中的全局进行copy操作，即赋值：</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> (^globalBlock)(<span class="type">void</span>) = ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;globalBlock&quot;</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"> <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[globalBlock <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSGlobalBlock__</span></span><br></pre></td></tr></table></figure>
+
+<p>仍是全局block</p>
+<ul>
+<li>而对2中的栈block进行赋值操作：</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSInteger</span> num = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> (^mallocBlock)(<span class="type">void</span>) = ^&#123;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;stackBlock:%zd&quot;</span>,num);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[mallocBlock <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSMallocBlock__</span></span><br></pre></td></tr></table></figure>
+
+<p>对栈blockcopy之后，并不代表着栈block就消失了，左边的mallock是堆block，右边被copy的仍是栈block<br>比如:</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span> testWithBlock:^&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,<span class="keyword">self</span>);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)testWithBlock:(dispatch_block_t)block</span><br><span class="line">&#123;</span><br><span class="line">    block();</span><br><span class="line">    </span><br><span class="line">    dispatch_block_t tempBlock = block;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@,%@&quot;</span>,[block <span class="keyword">class</span>],[tempBlock <span class="keyword">class</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSStackBlock__</span>,<span class="emphasis">__NSMallocBlock__</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>即如果对栈Block进行copy，将会copy到堆区，对堆Block进行copy，将会增加引用计数，对全局Block进行copy，因为是已经初始化的，所以什么也不做。</strong></li>
+</ul>
+<p>另外，__block变量在copy时，由于__forwarding的存在，栈上的__forwarding指针会指向堆上的__forwarding变量，而堆上的__forwarding指针指向其自身，所以，如果对__block的修改，实际上是在修改堆上的__block变量。</p>
+<p><strong>即__forwarding指针存在的意义就是，无论在任何内存位置，都可以顺利地访问同一个__block变量</strong>。</p>
+<ul>
+<li>另外由于block捕获的__block修饰的变量会去持有变量，那么如果用__block修饰self，且self持有block，并且block内部使用到__block修饰的self时，就会造成多循环引用，即self持有block，block 持有__block变量，而__block变量持有self，造成内存泄漏。<br>比如:</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__block <span class="keyword">typeof</span>(<span class="keyword">self</span>) blockSelf = <span class="keyword">self</span>;</span><br><span class="line">   </span><br><span class="line">   _testBlock = ^&#123;</span><br><span class="line">       </span><br><span class="line">       <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,blockSelf);</span><br><span class="line">   &#125;;</span><br><span class="line">   </span><br><span class="line">   _testBlock();</span><br></pre></td></tr></table></figure>
+
+<p>如果要解决这种循环引用，可以主动断开__block变量对self的持有，即在block内部使用完blockSelf后，将其置为nil，但这种方式有个问题，如果block一直不被调用，那么循环引用将一直存在。<br>所以，我们最好还是用__weak来修饰self</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/algorithm/index.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1752,143 +1889,6 @@
 <p>1.空的树（没有节点）可以理解为什么都没 像空气一样<br>2.只有根节点。 （理解一个人只有一个头 其他的什么都没，说的有点恐怖）<br>3.只有左子树 （一个头 一个左手 感觉越来越写不下去了）<br>4.只有右子树<br>5.左右子树都有</p>
 <p>二叉树可以转换成森林 树也可以转换成二叉树。这里就不介绍了 你做项目绝对用不到<br>数据结构大致介绍这么多吧。理解为主, 别死记，死记没什么用</p>
 <h2 id=""><a href="#" class="headerlink" title=""></a></h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/block/index.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jack Wang">
-      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="王科杰">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iOS/block/index.html" class="post-title-link" itemprop="url">Block相关知识点</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2015-07-10 12:24:27" itemprop="dateCreated datePublished" datetime="2015-07-10T12:24:27+08:00">2015-07-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/OC%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">OC语言</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/iOS/block/index.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/iOS/block/index.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Block的几种形式"><a href="#Block的几种形式" class="headerlink" title="Block的几种形式"></a>Block的几种形式</h2><p>   分为全局Block(<code>_NSConcreteGlobalBlock</code>)、栈Block(<code>_NSConcreteStackBlock</code>)、堆Block<br>(<code>_NSConcreteMallocBlock</code>)三种形式<br>   其中栈Block存储在栈(stack)区，堆Block存储在堆(heap)区，全局Block存储在已初始化数据(.data)区</p>
-<p><strong>1、不使用外部变量的block是全局block</strong></p>
-<p>比如：</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;globalBlock&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSGlobalBlock__</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>2、使用外部变量并且未进行copy操作的block是栈block</strong></p>
-<p>比如:</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSInteger</span> num = <span class="number">10</span>;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[^&#123;</span><br><span class="line">      <span class="built_in">NSLog</span>(<span class="string">@&quot;stackBlock:%zd&quot;</span>,num);</span><br><span class="line">  &#125; <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSStackBlock__</span></span><br></pre></td></tr></table></figure>
-
-<p>日常开发常用于这种情况:</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span> testWithBlock:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,<span class="keyword">self</span>);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)testWithBlock:(dispatch_block_t)block &#123;</span><br><span class="line">    block();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[block <span class="keyword">class</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>3、对栈block进行copy操作，就是堆block，而对全局block进行copy，仍是全局block</strong></p>
-<ul>
-<li>比如堆1中的全局进行copy操作，即赋值：</li>
-</ul>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> (^globalBlock)(<span class="type">void</span>) = ^&#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;globalBlock&quot;</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"> <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[globalBlock <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSGlobalBlock__</span></span><br></pre></td></tr></table></figure>
-
-<p>仍是全局block</p>
-<ul>
-<li>而对2中的栈block进行赋值操作：</li>
-</ul>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSInteger</span> num = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> (^mallocBlock)(<span class="type">void</span>) = ^&#123;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;stackBlock:%zd&quot;</span>,num);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,[mallocBlock <span class="keyword">class</span>]);</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSMallocBlock__</span></span><br></pre></td></tr></table></figure>
-
-<p>对栈blockcopy之后，并不代表着栈block就消失了，左边的mallock是堆block，右边被copy的仍是栈block<br>比如:</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span> testWithBlock:^&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,<span class="keyword">self</span>);</span><br><span class="line">&#125;];</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)testWithBlock:(dispatch_block_t)block</span><br><span class="line">&#123;</span><br><span class="line">    block();</span><br><span class="line">    </span><br><span class="line">    dispatch_block_t tempBlock = block;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@,%@&quot;</span>,[block <span class="keyword">class</span>],[tempBlock <span class="keyword">class</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="emphasis">__NSStackBlock__</span>,<span class="emphasis">__NSMallocBlock__</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>即如果对栈Block进行copy，将会copy到堆区，对堆Block进行copy，将会增加引用计数，对全局Block进行copy，因为是已经初始化的，所以什么也不做。</strong></li>
-</ul>
-<p>另外，__block变量在copy时，由于__forwarding的存在，栈上的__forwarding指针会指向堆上的__forwarding变量，而堆上的__forwarding指针指向其自身，所以，如果对__block的修改，实际上是在修改堆上的__block变量。</p>
-<p><strong>即__forwarding指针存在的意义就是，无论在任何内存位置，都可以顺利地访问同一个__block变量</strong>。</p>
-<ul>
-<li>另外由于block捕获的__block修饰的变量会去持有变量，那么如果用__block修饰self，且self持有block，并且block内部使用到__block修饰的self时，就会造成多循环引用，即self持有block，block 持有__block变量，而__block变量持有self，造成内存泄漏。<br>比如:</li>
-</ul>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__block <span class="keyword">typeof</span>(<span class="keyword">self</span>) blockSelf = <span class="keyword">self</span>;</span><br><span class="line">   </span><br><span class="line">   _testBlock = ^&#123;</span><br><span class="line">       </span><br><span class="line">       <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>,blockSelf);</span><br><span class="line">   &#125;;</span><br><span class="line">   </span><br><span class="line">   _testBlock();</span><br></pre></td></tr></table></figure>
-
-<p>如果要解决这种循环引用，可以主动断开__block变量对self的持有，即在block内部使用完blockSelf后，将其置为nil，但这种方式有个问题，如果block一直不被调用，那么循环引用将一直存在。<br>所以，我们最好还是用__weak来修饰self</p>
-
       
     </div>
 
