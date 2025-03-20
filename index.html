@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">71</span></a>
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档<span class="badge">72</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -139,12 +139,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">79</span></a>
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签<span class="badge">80</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">71</span></a>
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类<span class="badge">72</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -268,7 +268,7 @@
 <blockquote>
 <p>Tips: 左侧边栏有<code>搜索</code>框，可以关键字检索整个博客内容。</p>
 </blockquote>
-<h2 id="目录索引"><a href="#目录索引" class="headerlink" title="目录索引"></a>目录索引</h2><!-- 2024年5月2号整理 -->
+<h2 id="目录索引"><a href="#目录索引" class="headerlink" title="目录索引"></a>目录索引</h2><!-- 2024年10月28号整理 -->
 <ul>
 <li><a href="../categories/index">我的博客分类</a></li>
 <li><a href="./iOS/index">iOS基础相关</a> </li>
@@ -276,7 +276,8 @@
 <li><a href="./luafile/index">lua相关</a></li>
 <li><a href="./os/dyld">dyly-简阅</a></li>
 <li><a href="./acrossplatform/breakpad">Breakpad跨平台Crash Report解决方案</a></li>
-<li><a href="os/ios-macos.html">MacOS和iOS操作系统</a></li>
+<li><a href="os/ios-macos">MacOS和iOS操作系统</a></li>
+<li><a href="./iosadvanced/crashtroubleshoot">iOS崩溃排障指南</a></li>
 </ul>
 <h1 id="快速导航-查询"><a href="#快速导航-查询" class="headerlink" title="快速导航/查询"></a>快速导航/查询</h1><ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9lM2Q1MjFiMmNiNDM=">objc4<i class="fa fa-external-link-alt"></i></span></li>
@@ -295,6 +296,10 @@
 <li>Flutter 没有记录</li>
 <li>Reactnative 没有记录</li>
 </ul>
+<h2 id="计划中…"><a href="#计划中…" class="headerlink" title="计划中…"></a>计划中…</h2><ul>
+<li>学习音视频相关知识。</li>
+<li>建<code>动态</code>博客。 类似如halo、WordPress。</li>
+</ul>
 <h2 id="我的公众号"><a href="#我的公众号" class="headerlink" title="我的公众号"></a>我的公众号</h2><img src="/images/wechatpublic.jpg" class="" title="我的公众号">
           <!--noindex-->
             <div class="post-button">
@@ -304,6 +309,93 @@
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iosadvanced/crashtroubleshoot.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jack Wang">
+      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王科杰">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iosadvanced/crashtroubleshoot.html" class="post-title-link" itemprop="url">iOS程序崩溃排障指南</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-10-28 11:26:39" itemprop="dateCreated datePublished" datetime="2024-10-28T11:26:39+08:00">2024-10-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/iOS%E8%BF%9B%E9%98%B6/" itemprop="url" rel="index"><span itemprop="name">iOS进阶</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/iosadvanced/crashtroubleshoot.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/iosadvanced/crashtroubleshoot.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="崩溃类型"><a href="#崩溃类型" class="headerlink" title="崩溃类型"></a>崩溃类型</h1><p>iOS 有 4 种崩溃类型 NSException、C++ Exception、Signal、Mach。</p>
+<p>C++ Exception <span class="exturl" data-url="aHR0cHM6Ly9tcC53ZWl4aW4ucXEuY29tL3MvTUsyNkVjdVZTMkdGT2pvY2d2dmV0QQ==">https://mp.weixin.qq.com/s/MK26EcuVS2GFOjocgvvetA<i class="fa fa-external-link-alt"></i></span></p>
+<p>Signal &amp; Mach<br><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC83MTQyNjU2NTkxMTM5OTYyODg4">https://juejin.cn/post/7142656591139962888<i class="fa fa-external-link-alt"></i></span><br>对 signal 和 mach 异常处理讲的比较透彻，我在实现对 mach 异常兜底过程中从这边文章里面受了很多启发。</p>
+
       
     </div>
 
@@ -954,92 +1046,6 @@ EndPC       Uint32
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/luafile/index.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jack Wang">
-      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="王科杰">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/luafile/index.html" class="post-title-link" itemprop="url">lua相关</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-09-14 11:25:42" itemprop="dateCreated datePublished" datetime="2021-09-14T11:25:42+08:00">2021-09-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/lua/" itemprop="url" rel="index"><span itemprop="name">lua</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/luafile/index.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/luafile/index.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ul>
-<li><a href="./luacode">Lua源码学习</a></li>
-<li><a href="./lua-patch">在iOS上面的应用，Lua热修复</a></li>
-<li><a href="./lua">lua随缘记录</a></li>
-</ul>
-<p>参考：<br><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNvZGluZ25vdy5jb20vMjAwNS8xMi9jb21wYXJlX3dpdGhfbHVhXzUuaHRtbA==">虚拟机之比较，lua 5 的实现<i class="fa fa-external-link-alt"></i></span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://wangkejie.top/luafile/lua-patch.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1110,6 +1116,92 @@ EndPC       Uint32
 </ol>
 <p>还有很多 __add __mode等等。自行学习。</p>
 <h1 id="方法说明"><a href="#方法说明" class="headerlink" title="方法说明"></a>方法说明</h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/luafile/index.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jack Wang">
+      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王科杰">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/luafile/index.html" class="post-title-link" itemprop="url">lua相关</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-14 11:25:42" itemprop="dateCreated datePublished" datetime="2021-09-14T11:25:42+08:00">2021-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/lua/" itemprop="url" rel="index"><span itemprop="name">lua</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/luafile/index.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/luafile/index.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <ul>
+<li><a href="./luacode">Lua源码学习</a></li>
+<li><a href="./lua-patch">在iOS上面的应用，Lua热修复</a></li>
+<li><a href="./lua">lua随缘记录</a></li>
+</ul>
+<p>参考：<br><span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNvZGluZ25vdy5jb20vMjAwNS8xMi9jb21wYXJlX3dpdGhfbHVhXzUuaHRtbA==">虚拟机之比较，lua 5 的实现<i class="fa fa-external-link-alt"></i></span></p>
+
       
     </div>
 
@@ -1588,146 +1680,6 @@ mach_init(); // from libc.a
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://wangkejie.top/iOS/performance/performance.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Jack Wang">
-      <meta itemprop="description" content="书山有路勤为径，学海无涯苦作舟！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="王科杰">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iOS/performance/performance.html" class="post-title-link" itemprop="url">performance</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-31 17:46:57" itemprop="dateCreated datePublished" datetime="2021-08-31T17:46:57+08:00">2021-08-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/iOS/performance/performance.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/iOS/performance/performance.html" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h1><h2 id="内存优化"><a href="#内存优化" class="headerlink" title="内存优化"></a>内存优化</h2><h2 id="卡顿优化"><a href="#卡顿优化" class="headerlink" title="卡顿优化"></a>卡顿优化</h2><h2 id="电量优化"><a href="#电量优化" class="headerlink" title="电量优化"></a>电量优化</h2><h2 id="启动优化"><a href="#启动优化" class="headerlink" title="启动优化"></a>启动优化</h2><h2 id="体积优化"><a href="#体积优化" class="headerlink" title="体积优化"></a>体积优化</h2><h2 id="网络优化"><a href="#网络优化" class="headerlink" title="网络优化"></a>网络优化</h2><h2 id="编译优化"><a href="#编译优化" class="headerlink" title="编译优化"></a>编译优化</h2><h2 id="APM"><a href="#APM" class="headerlink" title="APM"></a>APM</h2><h2 id="调试-amp-Crash"><a href="#调试-amp-Crash" class="headerlink" title="调试 &amp; Crash"></a>调试 &amp; Crash</h2><p>收集中</p>
-<h1 id="性能优化-1"><a href="#性能优化-1" class="headerlink" title="性能优化"></a>性能优化</h1><h2 id="性能优化，架构先行"><a href="#性能优化，架构先行" class="headerlink" title="性能优化，架构先行"></a>性能优化，架构先行</h2><ul>
-<li>组件化 <ul>
-<li>共享基础设施</li>
-<li>下沉公共服务</li>
-<li>隔离业务模块</li>
-</ul>
-</li>
-<li>标准化<ul>
-<li>统一的基础服务</li>
-<li>统一的应用框架</li>
-<li>统一的开发范式</li>
-<li>统一的用户体验</li>
-</ul>
-</li>
-</ul>
-<h2 id="收益"><a href="#收益" class="headerlink" title="收益"></a>收益</h2><ul>
-<li>共享公共服务，业务统一模板，降低项目复杂度</li>
-<li>代码复用率 0 -&gt; 80%</li>
-<li>线上性能问题种类，减少3倍以上</li>
-<li>Crash率，减少3倍以上</li>
-</ul>
-<h2 id="端上性能监控"><a href="#端上性能监控" class="headerlink" title="端上性能监控"></a>端上性能监控</h2><ul>
-<li>可用性<ul>
-<li>Crash</li>
-<li>Abort</li>
-<li>业务异常</li>
-</ul>
-</li>
-<li>基础性能<ul>
-<li>启动时间</li>
-<li>包体积</li>
-</ul>
-</li>
-<li>流畅性<ul>
-<li>页面测速</li>
-<li>卡炖检测</li>
-<li>关键路径</li>
-<li>渲染检测</li>
-</ul>
-</li>
-<li>资源消耗<ul>
-<li>CPU</li>
-<li>内存</li>
-<li>流量</li>
-<li>储存<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2></li>
-</ul>
-</li>
-<li>服务端开关</li>
-<li>热修复</li>
-<li>新版本</li>
-</ul>
-<h2 id="验证效果，AB实验"><a href="#验证效果，AB实验" class="headerlink" title="验证效果，AB实验"></a>验证效果，AB实验</h2><h2 id="网络优化-1"><a href="#网络优化-1" class="headerlink" title="网络优化"></a>网络优化</h2><p>利用http2.0 </p>
-<ul>
-<li>多路复用；二进制分桢；头部压缩；服务端推送</li>
-<li>页面加载时间缩短 ~7.5%</li>
-<li>数据</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dhbmdrZWppZS9pT1MtUGVyZm9ybWFuY2UtT3B0aW1pemF0aW9u">汇总<i class="fa fa-external-link-alt"></i></span></p>
-<p><span class="exturl" data-url="aHR0cHM6Ly9pbWFnZXMuYXBwbGUuY29tL21lZGlhL3VzL29zeC8yMDEzL2RvY3MvT1NYX01hdmVyaWNrc19Db3JlX1RlY2hub2xvZ3lfT3ZlcnZpZXcucGRm">https://images.apple.com/media/us/osx/2013/docs/OSX_Mavericks_Core_Technology_Overview.pdf<i class="fa fa-external-link-alt"></i></span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1799,20 +1751,20 @@ mach_init(); // from libc.a
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-count">72</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">71</span>
+        <span class="site-state-item-count">72</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">79</span>
+        <span class="site-state-item-count">80</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1849,7 +1801,7 @@ mach_init(); // from libc.a
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="heart"></i>
   </span>
@@ -1980,3 +1932,4 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
 
 </body>
 </html>
+<script src="https://fastly.jsdelivr.net/npm/live2d-widgets@0/autoload.js"></script>
